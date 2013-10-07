@@ -34,7 +34,7 @@ public class RedditImage {
 			int i = 0;
 			
 			//fetching the document from the URL in html
-			page = Jsoup.connect("http://www.reddit.com/r/funny/").get(); 
+			page = (Jsoup.connect("http://www.reddit.com/r/funny/").timeout(10000)).get(); 
 			while(i < numPages){
 				
 				//selecting all the elements whose urls end with "jpg" or "png"
@@ -78,8 +78,10 @@ public class RedditImage {
 			System.out.println("Download complete.");
 		}
 		
-		catch(IOException e){
+		catch(Exception e){
 			e.printStackTrace();
+			
+			
 			
 		}
 	}
