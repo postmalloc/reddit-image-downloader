@@ -47,12 +47,17 @@ public class RedditImage {
 					OutputStream op;
 					
 					//raw outputstream of each element
+					String fileName = link.text();
+					//to replace invalid characters in filename. 
+					fileName = 	fileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+					System.out.println("Downloading " + fileName);
+						
 					if(link.attr("href").endsWith("jpg")){
-						op = new FileOutputStream(dest + "/" + link.text() + ".jpg");
+						op = new FileOutputStream(dest + "/" + fileName + ".jpg");
 					}
 					
 					else{
-						op = new FileOutputStream(dest + "/" + link.text() + ".png");
+						op = new FileOutputStream(dest + "/" + fileName + ".png");
 					}
 					
 					//byte array for storing the raw data
