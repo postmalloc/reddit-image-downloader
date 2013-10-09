@@ -44,48 +44,17 @@ public class RedditImage{
 					
 					//extracting the url from those elements
 					URL addr = new URL(link.attr("href"));
-<<<<<<< HEAD
 					ReadableByteChannel rbc = Channels.newChannel(addr.openStream());
 					if(link.attr("href").endsWith("jpg")){
 						FileOutputStream fos = new FileOutputStream(dest + "/" + link.text() + ".jpg");
 						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 						fos.close();
-=======
-					InputStream in = addr.openStream();
-					OutputStream op;
-					
-					//raw outputstream of each element
-					String fileName = link.text();
-					//to replace invalid characters in filename. 
-					fileName = 	fileName.replaceAll("[^a-zA-Z0-9.-]", "_");
-					System.out.println("Downloading " + fileName);
-						
-					if(link.attr("href").endsWith("jpg")){
-						op = new FileOutputStream(dest + "/" + fileName + ".jpg");
->>>>>>> 04858917353f3254308d7040922278bbf7f9f588
 					}
 					else{
-<<<<<<< HEAD
 						FileOutputStream fos = new FileOutputStream(dest + "/" + link.text() + ".png");
 						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 						fos.close();
 					}				
-=======
-						op = new FileOutputStream(dest + "/" + fileName + ".png");
-					}
-					
-					//byte array for storing the raw data
-					byte[] b = new byte[20480];
-					int length;
-					
-					while ((length = in.read(b)) != -1) {
-						//writing it to a file
-						op.write(b, 0, length)	;
-					}
-					
-					in.close();
-					op.close();
->>>>>>> 04858917353f3254308d7040922278bbf7f9f588
 				}
 				//moving to next page
 				Element next = page.select("a[rel = nofollow next]").first();
@@ -98,10 +67,8 @@ public class RedditImage{
 			System.out.println("Download complete.");
 		}
 		
-		catch(Exception e){
+		catch(IOException e){
 			e.printStackTrace();
-			
-			
 			
 		}
 	}
