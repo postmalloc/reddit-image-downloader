@@ -5,16 +5,17 @@
  */
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Scanner;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-public class RedditImage {
+public class RedditImage{
 	public static void main(String[] args){
 		
 		//jsoup document object
@@ -34,7 +35,7 @@ public class RedditImage {
 			int i = 0;
 			
 			//fetching the document from the URL in html
-			page = Jsoup.connect("http://www.reddit.com/r/funny/").get(); 
+			page = (Jsoup.connect("http://www.reddit.com/r/funny/").timeout(10000)).get(); 
 			while(i < numPages){
 				
 				//selecting all the elements whose urls end with "jpg" or "png"
@@ -43,35 +44,23 @@ public class RedditImage {
 					
 					//extracting the url from those elements
 					URL addr = new URL(link.attr("href"));
-					InputStream in = addr.openStream();
-					OutputStream op;
-					
-					//raw outputstream of each element
+					ReadableByteChannel rbc = Channels.newChannel(addr.openStream());
 					if(link.attr("href").endsWith("jpg")){
-						op = new FileOutputStream(dest + "/" + link.text() + ".jpg");
+						FileOutputStream fos = new FileOutputStream(dest + "/" + link.text() + ".jpg");
+						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+						fos.close();
 					}
-					
 					else{
-						op = new FileOutputStream(dest + "/" + link.text() + ".png");
-					}
-					
-					//byte array for storing the raw data
-					byte[] b = new byte[20480];
-					int length;
-					
-					while ((length = in.read(b)) != -1) {
-						//writing it to a file
-						op.write(b, 0, length)	;
-					}
-					
-					in.close();
-					op.close();
+						FileOutputStream fos = new FileOutputStream(dest + "/" + link.text() + ".png");
+						fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+						fos.close();
+					}				
 				}
 				//moving to next page
 				Element next = page.select("a[rel = nofollow next]").first();
 				String nextLink = next.attr("href").toString();
-				page = Jsoup.connect(nextLink).get();
-				i = i + 25;
+				page = (Jsoup.connect(nextLink).timeout(10000)).get();
+				i = i + 1;
 				
 			}
 			
